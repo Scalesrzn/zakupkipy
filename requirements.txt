@@ -1,4 +1,4 @@
-requests==2.18.1
+requests==2.20.0
 lxml==4.2.3
 bs4==0.0.1
 xlrd==1.1.0
