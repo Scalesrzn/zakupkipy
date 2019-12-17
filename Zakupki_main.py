@@ -1,4 +1,4 @@
-#!/usr/bin/python3
+
 from tkinter import *
 from tkinter import messagebox
 from tkinter import ttk
@@ -37,16 +37,16 @@ def key():
         stage = {'pa' : 'on'}
 
     if selected.get() == 44:
-        fz = {'fz44' : 'on'}
+        sfz = {'fz44' : 'on'}
     else:
-        fz = {'fz223' : 'on'}
-    return keys, fz, gPrice, stage, dateUpdate
+        sfz = {'fz223' : 'on'}
+    return keys, sfz, gPrice, stage, dateUpdate
 
 
 
 
 #формируем URL запрос для поиска необходимой информации
-def create_url(searchString, updateDateFrom, params, pageNumber = 1):
+def create_url(searchString, params, pageNumber = 1):
 
         #задаем фильтры для поиска
     payload = {"searchString": searchString,
@@ -57,7 +57,7 @@ def create_url(searchString, updateDateFrom, params, pageNumber = 1):
                 "updateDateFrom": dateUpdate,
                 "updateDateTo": date.today().strftime('%d.%m.%Y'),
                 }
-    payload.update(fz) 
+    payload.update(sfz) 
     payload.update(stage)
 
     #логирование в консоль заданных фильтров
@@ -189,10 +189,10 @@ def extract_distributor(deals_info):
             try:
                 #используя DOM модель обращаемся к блоку div с классом noticetabBox и извлекаем текст
                 player_1 = fromstring(str(deal_page.text)).xpath(
-                    '//div[contains(@class, "noticeTabBox")'
+                    '//div[contains(@class, "contentTabBoxBlock")'
                     ' and '
-                    'contains(@class, "padBtm20")]'
-                    '/div/div/table/tr[2]/td[3]/text()')[0].strip()
+                    'contains(@class, "orderCard")]'
+                    '/div/div/div/table/tr[2]/td[3]/text()')[0].strip()
             except IndexError:
                 player_1 = "Не найдено"
             #изменяем формат
@@ -249,13 +249,13 @@ def create_parser():
 #основная часть, где происходит вызов всех функций
 # if __name__ == '__main__':
 def start():
-    global fz
+    global sfz
     global gPrice
     global stage
     global dateUpdate
 
     #вызов функции и запись в переменную возвращаемых данных из функции
-    KEY_WORDS, fz, gPrice, stage, dateUpdate = key()
+    KEY_WORDS, sfz, gPrice, stage, dateUpdate = key()
     print (KEY_WORDS)
     parser = create_parser()
     #аналогично
@@ -277,7 +277,7 @@ def start():
         #если количество записей больеш 50, то цикл по беребору страниц и прарсингу информации с них
         number_of_records = re.findall(r'\b\d+\b', number_of_records)
         if number_of_records is not None and int(number_of_records[0]) > 50:
-            pageAmount = int(number_of_records[0])
+            pageAmount = int(number_of_records[0])//50+1
             logging.info("pageAmount is {}".format(pageAmount))
             for pageNumber in range(1, pageAmount):
                 print(pageNumber)
@@ -351,5 +351,5 @@ SEARCH_URL = "http://www.zakupki.gov.ru/epz/order/extendedsearch/results.html"
 DEAL_URL = "http://www.zakupki.gov.ru/epz/order/" \
            "notice/ea44/view/supplier-results.html"
 DELAY = 10
-#KEY_WORDS, fz, gPrice, stage = key()
+#KEY_WORDS, sfz, gPrice, stage = key()
 window.mainloop()
